@@ -5,36 +5,46 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { Form} from "@/components/ui/form"
+import Link from "next/link"
+import { toast } from "sonner"
 
 
-const formSchema = z.object({
-    username: z.string().min(2).max(50),
-})
 
-const AuthForm = ({type}:{type:FormType}) => {
-    // 1. Define your form.
+const authFormSchema = (type: FormType) => {
+    return z.object({   
+        name: type === "sign-up" ? z.string().min(3) : z.string().optional(),
+        email: z.string().email(),
+        password: z.string().min(3),
+    })
+}
+
+
+const AuthForm = ({ type }: { type: FormType }) => {
+ 
+    const formSchema = authFormSchema(type);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            username: "",
+            name: "",
+            email: "",
+            password: "",
         },
     })
 
-    // 2. Define a submit handler.
+    
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
+        try{
+            if(type === "sign-up"){
+                console.log("SIGN UP", values);
+            } else {
+                console.log("SIGN IN", values);
+            }
+
+        }catch(error){
+            console.log(error);
+            toast.error('There was an error: ${error}')
+        }
     }
 
     const isSignIn = type === "sign-in";
@@ -48,17 +58,20 @@ const AuthForm = ({type}:{type:FormType}) => {
                 </div>
                 <h3>Practice job interview with AI Assistance</h3>
 
-            
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8 mt-4 form">
-                    {!isSignIn && <p>Name</p>}
-                    <p>Email</p>
-                    <p>Password</p>
-                    
-                    <Button type="submit">Submit</Button>
-                </form>
-            </Form>
-        </div>
+
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8 mt-4 form">
+                        {!isSignIn && <p>Name</p>}
+                        <p>Email</p>
+                        <p>Password</p>
+
+                        <Button className="btn" type="submit">{isSignIn ? 'Sign in' : 'Create an Account'}</Button>
+                    </form>
+                </Form>
+                <p className="text-center">{isSignIn ? 'No account yet?' : 'Have an account already?'}
+                    <Link href={isSignIn ? '/sign-up' : '/sign-in'} className="font-bold text-user-primary ml-1">{!isSignIn ? "Sign in" : 'Sign up'}</Link>
+                </p>
+            </div>
         </div>
     )
 }
