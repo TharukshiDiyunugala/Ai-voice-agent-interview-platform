@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { vapi } from '@/lib/vapi.sdk';
 import { interviewer } from '@/constants';
+import { createFeedback } from '@/lib/actions/general.action';
 
 enum CallStatus {
     INACTIVE = "INACTIVE",
@@ -25,7 +26,7 @@ const Agent = ({ userName, userId, type, questions, interviewId }: AgentProps) =
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [lastMessage, setLastMessage] = useState<string>("");
 
-    
+
     useEffect(() => {
         const onCallStart = () => {
             setCallStatus(CallStatus.ACTIVE);
@@ -69,45 +70,38 @@ const Agent = ({ userName, userId, type, questions, interviewId }: AgentProps) =
             vapi.off("speech-end", onSpeechEnd);
             vapi.off("error", onError);
         };
-    }, [])
-
+    }, []);
     useEffect(() => {
-        // if (messages.length > 0) {
-        //     setLastMessage(messages[messages.length - 1].content);
-        // }
+        if (messages.length > 0) {
+            setLastMessage(messages[messages.length - 1].content);
+        }
 
         const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-            console.log("handleGenerateFeedback");
+            console.log("Generate feedback here");
 
-            const {success, id} = {
-                success: true,
-                id:'feedback-id'
-            }
+            const { success, feedbackId: id } = await createFeedback({
+                interviewId: interviewId!,
+                userId: userId!,
+                transcript: messages,
+                //feedbackId,
+            })
+
             if (success && id) {
                 router.push(`/interview/${interviewId}/feedback`);
             } else {
-                console.log("Error saving feedback");
+                console.log("Failed to create feedback");
                 router.push("/");
-            
-
-            // const { success, feedbackId: id } = await createFeedback({
-            //     interviewId: interviewId!,
-            //     userId: userId!,
-            //     transcript: messages,
-            //     feedbackId,
-            // });
-
-            
-             }
+            }
         };
+
         if (callStatus === CallStatus.FINISHED) {
-           if (type === "generate") {
+            if (type === "generate") {
                 router.push("/");
             } else {
                 handleGenerateFeedback(messages);
             }
         }
-    }, [messages, callStatus, /*feedbackId*/, interviewId, router, type, userId]);
+    }, [messages, callStatus,  interviewId, router, type, userId]);
 
 
     const handleCall = async () => {
@@ -210,7 +204,7 @@ const Agent = ({ userName, userId, type, questions, interviewId }: AgentProps) =
                         </span>
                     </button>
                 ) : (
-                    <button className="btn-disconnect"onAuxClick={handleDisconnect}>
+                    <button className="btn-disconnect" onClick={handleDisconnect}>
                         End
                     </button>
                 )}

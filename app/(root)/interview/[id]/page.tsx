@@ -1,5 +1,5 @@
 import React from 'react'
-import { getInterviewsById } from '@/lib/actions/general.action'
+import { getInterviewsById } from '@/lib/actions/general.action';
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import { getRandomInterviewCover } from '@/lib/utils';
@@ -33,18 +33,18 @@ const page = async ({ params }: RouteParams) => {
 
                 </div>
                 <p className="bg-dark-200 px-4 py-2 rounded-lg h-fit">
-          {interview.type}
-        </p>
+                    {interview.type}
+                </p>
 
             </div>
             <Agent
-        userName={user?.name!}
-        userId={user?.id}
-        interviewId={id}
-        type="interview"
-        questions={interview.questions}
-        //feedbackId={feedback?.id}
-      />
+                userName={user?.name || ''}
+                userId={user?.id}
+                interviewId={id}
+                type="interview"
+                questions={interview.questions}
+                //feedbackId={feedback?.id}
+            />
 
         </>
     )
