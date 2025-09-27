@@ -1,3 +1,11 @@
+## 🌐 Live Demo
+👉 [Try the Deployed App Here]([https://your-deployed-link.com](https://ai-voice-agent-interview-platform-seven.vercel.app/))  
+
+⚠️ **Note:**  
+The AI voice interview feature (powered by Vapi) may not work continuously since it requires paid credits. Once the free/credit limit is reached, the feature will stop responding.  
+
+✅ Core features like authentication, dashboard, and UI will still work.  
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
